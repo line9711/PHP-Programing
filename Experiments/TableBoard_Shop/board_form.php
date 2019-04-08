@@ -2,7 +2,6 @@
 #TODO: update form 인 경우, form 에 정보 표시
 if(isset($_GET[num])) {
     #TODO: MySQL 테이블에서, num에 해당하는 레코드 가져오기
-    //로직 실행되어야함.
 }
 ?>
 
@@ -38,11 +37,9 @@ if(isset($_GET[num])) {
 			<a href="index.php" style="border: 1px; padding: 10px; background: #36304a; display: block; width: 100px; text-align: center; border-radius: 10px; margin-bottom: 5px;"> Back </a>
             <?php
                 if(isset($_GET[num])) {
-                    echo "<form method=\"POST\" action=\"function/update.php?num=$_GET[num]\">";
-                    //num이라는 파라미터가 있으면 update를 하는 것. post 폼을 만드는 것.
+                    echo "<form method=\"POST\" action=\"function/update.php\">";
                 } else {
                     echo "<form method=\"POST\" action=\"function/insert.php\">";
-                    //아니라면 insert 를 하는 것.
                 }
             ?>
 				<div class="table100">
@@ -61,17 +58,26 @@ if(isset($_GET[num])) {
 						<tr>
                             <?php
                             if(isset($_GET[num])) { //update 의 경우!
-                                // 기본값 처리. num 이 있으면 수정하는 경우. input 값에 기본값이 표시가 되어있어야함. (업데이트 전) todo에 표시해야함.
-                                //해당 정보 값에 기입해야함.
-                                ?>
-                                <td class="column1"> <input name="date" type="text" value="<? #TODO: 정보 표시 ?>" /> </td>
-                                <td class="column2"> <input name="order_id" type="number" value="<? #TODO: 정보 표시 ?>" /> </td>
-                                <td class="column3"> <input name="name" type="text" value="<?  #TODO: 정보 표시 ?>" /> </td>
-                                <td class="column4"> <input name="price" type="number" placeholder="$" style="text-align: right;" value="<? #TODO: 정보 표시 ?>" /> </td>
-                                <td class="column5"> <input name="quantity" type="number" value="<? #TODO: 정보 표시 ?>" style="text-align: right;" /> </td>
-                                <td class="column6"> $<span id="total"> <? #TODO: 정보 표시 ?> </span> </td>
-                                <?php
-                            } else { //그냥 add하는 것이니까 추가값은 없음.
+
+								$connect = mysql_connect("localhost","pjh","1234");
+								$db_con = mysql_select_db("pjh_db", $connect);
+
+								$sql = "select * from tableboard_shop where num = ".$_GET[num];
+
+								$result = mysql_query($sql, $connect);
+
+								while ($row = mysql_fetch_array($result)) {
+									echo "<td class='column1'> <input name='date' type='text' value='".$row[date]."' /> </td>";
+									echo "<td class='column2'> <input name='order_id' type='number' value='".$row[order_id]."' /> </td>";
+									echo "<td class='column3'> <input name='name' type='text' value='".$row[name]."' /> </td>";
+									echo "<td class='column4'> <input name='price' type='number' placeholder='$' style='text-align: right;' value='".$row[price]."' /> </td>";
+									echo "<td class='column5'> <input name='quantity' type='number' value='".$row[quantity]."' /> </td>";
+									echo "<td class='column6'> $<span id='total'>".($row[price] * $row[quantity])."</span> </td>";
+									echo "<input name='num' type='hidden' value='".$row[num]."' />"; //전송할 num 정보를 담는 부분.
+								}
+								
+								mysql_close();
+                            } else {
                                 ?>
                                 <td class="column1"> <input name="date" type="text" /> </td>
                                 <td class="column2"> <input name="order_id" type="number" /> </td>
@@ -87,12 +93,10 @@ if(isset($_GET[num])) {
 					</table>
 				</div>
                 <?php
-                    if(isset($_GET[num])) { //겟이라는 파라미터에 num이 있으면 업데이트
+                    if(isset($_GET[num])) {
                 ?>
                     <a href="function/delete.php?num=<? echo $_GET[num] ?>" style="border: 1px; padding: 10px; background: #36304a; display: block; width: 100px; text-align: center; float: right; border-radius: 10px; margin-top: 5px; margin-left: 5px; color: #007bff;"> Delete </a>
-                        //딜리트에 해당하는 버튼 생성. 프라이머리키(num)을 딜리트해야함. a태그로 num을 get방식으로 그대로 전달해서 보내줌.
                     <input style="border: 1px; padding: 10px; background: #36304a; display: block; width: 100px; text-align: center; float: right; border-radius: 10px; margin-top: 5px; margin-left: 5px; color: #007bff; cursor: pointer;" type="submit" value="Update">
-                        //업데이트 클릭하면되면 update.php로 가게 되야함.
                 <?php
                     } else {
                 ?>
